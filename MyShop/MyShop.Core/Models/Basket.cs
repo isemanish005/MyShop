@@ -14,6 +14,11 @@ namespace MyShop.Core.Models
         {
             this.BasketItems = new List<BasketItem>();
         }
+
+        public static implicit operator Basket(BasketItem v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

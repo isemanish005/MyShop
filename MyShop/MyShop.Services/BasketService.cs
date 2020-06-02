@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.WebSockets;
 
 namespace MyShop.Services
 {
@@ -91,8 +90,10 @@ namespace MyShop.Services
             {
                 item.Quantity = item.Quantity + 1;
             }
+
             basketContext.Commit();
         }
+
         public void RemoveFromBasket(HttpContextBase httpContext, string itemId)
         {
             Basket basket = GetBasket(httpContext, true);
@@ -103,11 +104,12 @@ namespace MyShop.Services
                 basket.BasketItems.Remove(item);
                 basketContext.Commit();
             }
-
         }
+
         public List<BasketItemViewModel> GetBasketItems(HttpContextBase httpContext)
         {
             Basket basket = GetBasket(httpContext, false);
+
             if (basket != null)
             {
                 var results = (from b in basket.BasketItems
@@ -119,7 +121,9 @@ namespace MyShop.Services
                                    ProductName = p.Name,
                                    Image = p.Image,
                                    Price = p.Price
-                               }).ToList();
+                               }
+                              ).ToList();
+
                 return results;
             }
             else
@@ -127,23 +131,24 @@ namespace MyShop.Services
                 return new List<BasketItemViewModel>();
             }
         }
+
         public BasketSummaryViewModel GetBasketSummary(HttpContextBase httpContext)
         {
             Basket basket = GetBasket(httpContext, false);
             BasketSummaryViewModel model = new BasketSummaryViewModel(0, 0);
-
             if (basket != null)
             {
                 int? basketCount = (from item in basket.BasketItems
                                     select item.Quantity).Sum();
+
                 decimal? basketTotal = (from item in basket.BasketItems
                                         join p in productContext.Collection() on item.ProductId equals p.Id
                                         select item.Quantity * p.Price).Sum();
 
                 model.BasketCount = basketCount ?? 0;
                 model.BasketTotal = basketTotal ?? decimal.Zero;
-                return model;
 
+                return model;
             }
             else
             {
@@ -151,6 +156,11 @@ namespace MyShop.Services
             }
         }
 
+        public void ClearBasket(HttpContextBase httpContext)
+        {
+            Basket basket = GetBasket(httpContext, false);
+            basket.BasketItems.Clear();
+            basketContext.Commit();
+        }
     }
-
 }

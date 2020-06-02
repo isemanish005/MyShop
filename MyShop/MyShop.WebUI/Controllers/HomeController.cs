@@ -20,24 +20,26 @@ namespace MyShop.WebUI.Controllers
             productCategories = productCategoryContext;
         }
 
-        public ActionResult Index(string Category=null)
+        public ActionResult Index(string Category = null)
         {
             List<Product> products;
             List<ProductCategory> categories = productCategories.Collection().ToList();
-            if(Category==null)
+
+            if (Category == null)
             {
                 products = context.Collection().ToList();
-            }else
+            }
+            else
             {
                 products = context.Collection().Where(p => p.Category == Category).ToList();
             }
+
             ProductListViewModel model = new ProductListViewModel();
             model.Products = products;
             model.ProductCategories = categories;
 
 
             return View(model);
-
         }
 
         public ActionResult Details(string Id)
